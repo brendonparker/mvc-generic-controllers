@@ -16,7 +16,7 @@ namespace DynamicWebApplication
     /// Naive implementation for demo purposes.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EFStorage<T> : IStorage<T> where T : class
+    public class EFStorage<T> : IStorage<T> where T : class, IStorageEntity
     {
         private readonly AppDbContext dbContext;
 
@@ -33,15 +33,15 @@ namespace DynamicWebApplication
 
         public void AddOrUpdate(Guid id, T item)
         {
-            var existing = dbSet.Find(id);
-            dbSet.Attach(item);
-            if (existing == null)
+            if (dbSet.Any(x => x.Id == id))
             {
-                dbContext.Entry(item).State = EntityState.Added;
+                dbSet.Attach(item);
+                dbContext.Entry(item).State = EntityState.Modified;
             }
             else
             {
-                dbContext.Entry(item).State = EntityState.Modified;
+                dbSet.Attach(item);
+                dbContext.Entry(item).State = EntityState.Added;
             }
             dbContext.SaveChanges();
         }

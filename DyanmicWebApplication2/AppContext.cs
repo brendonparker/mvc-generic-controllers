@@ -14,5 +14,6 @@ namespace DynamicWebApplication
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Person> Persons { get; set; }
+        public DbSet<SomeRecord> SomeRecords { get; set; }
     }
 }
