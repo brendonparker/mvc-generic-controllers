@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,23 +13,43 @@ namespace DynamicWebApplication
     }
 
     /// <summary>
-    /// For demo purposes. This should be registered as a singleton
+    /// Naive implementation for demo purposes.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Storage<T> : IStorage<T> where T : class
+    public class EFStorage<T> : IStorage<T> where T : class
     {
-        private Dictionary<Guid, T> storage = new Dictionary<Guid, T>();
+        private readonly AppDbContext dbContext;
 
-        public IEnumerable<T> GetAll() => storage.Values;
+        private readonly DbSet<T> dbSet;
 
-        public T GetById(Guid id)
+        public EFStorage(AppDbContext dbContext)
         {
-            return storage.FirstOrDefault(x => x.Key == id).Value;
+            this.dbContext = dbContext;
+
+            var propType = typeof(DbSet<>).MakeGenericType(typeof(T));
+
+            dbSet = typeof(AppDbContext).GetProperties().Single(x => x.PropertyType == propType).GetValue(dbContext) as DbSet<T>;
         }
 
         public void AddOrUpdate(Guid id, T item)
         {
-            storage[id] = item;
+            var existing = dbSet.Find(id);
+            dbSet.Attach(item);
+            if (existing == null)
+            {
+                dbContext.Entry(item).State = EntityState.Added;
+            }
+            else
+            {
+                dbContext.Entry(item).State = EntityState.Modified;
+            }
+            dbContext.SaveChanges();
         }
+
+        public IEnumerable<T> GetAll() =>
+            dbSet.ToList();
+
+        public T GetById(Guid id) =>
+            dbSet.Find(id);
     }
 }

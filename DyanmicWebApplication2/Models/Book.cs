@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace DynamicWebApplication
 {
-    [GeneratedController(NavText = "Books")]
+    [GeneratedController]
+    [NavigationMetadata(NavText = "Books", IconCss = "book")]
     public class Book : IStorageEntity
     {
         public Guid Id { get; set; }

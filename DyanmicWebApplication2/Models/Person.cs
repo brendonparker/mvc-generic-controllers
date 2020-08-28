@@ -2,7 +2,8 @@
 
 namespace DynamicWebApplication
 {
-    [GeneratedController(NavText = "People")]
+    [GeneratedController]
+    [NavigationMetadata(NavText = "People", IconCss = "user")]
     public class Person : IStorageEntity
     {
         public Guid Id { get; set; }

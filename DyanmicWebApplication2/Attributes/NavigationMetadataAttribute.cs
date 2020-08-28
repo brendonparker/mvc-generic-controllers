@@ -3,10 +3,10 @@
 namespace DynamicWebApplication
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class GeneratedControllerAttribute : Attribute
+    public class NavigationMetadataAttribute : Attribute
     {
-        public string Route { get; set; }
-        public bool ShowInNav { get; set; } = true;
         public string NavText { get; set; }
+        public string IconCss { get; set; }
+        public int SortOrder { get; set; } = 100;
     }
 }

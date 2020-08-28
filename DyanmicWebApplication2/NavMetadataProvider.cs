@@ -11,20 +11,21 @@ namespace DynamicWebApplication
         {
             var currentAssembly = typeof(NavMetadataProvider).Assembly;
             var candidates = currentAssembly.GetExportedTypes()
-                .Where(x => x.GetCustomAttributes(typeof(GeneratedControllerAttribute), false).Any());
+                .Select(x => (
+                    x.GetCustomAttribute<GeneratedControllerAttribute>(),
+                    x.GetCustomAttribute<NavigationMetadataAttribute>(),
+                    x.Name
+                ))
+                .Where(x => x.Item1 != null && x.Item2 != null)
+                .OrderBy(x => x.Item2.SortOrder);
 
-            foreach (var candidate in candidates)
+            foreach (var (attController, attNavMetadata, controllerName) in candidates)
             {
-                var att = candidate.GetCustomAttribute<GeneratedControllerAttribute>();
-
-                if (!att.ShowInNav) continue;
-
-                var controllerName = candidate.Name;
-
                 yield return new NavMetadata
                 {
-                    DisplayText = att.NavText ?? controllerName,
-                    Controller = controllerName
+                    DisplayText = attNavMetadata.NavText ?? controllerName,
+                    Controller = controllerName,
+                    IconCss = attNavMetadata.IconCss
                 };
             }
         }
@@ -35,5 +36,6 @@ namespace DynamicWebApplication
         public string Controller { get; set; }
         public string Action { get; set; } = "Index";
         public string DisplayText { get; set; }
+        public string IconCss { get; set; }
     }
 }

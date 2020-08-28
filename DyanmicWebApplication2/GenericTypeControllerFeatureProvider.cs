@@ -20,10 +20,6 @@ namespace DynamicWebApplication
                 feature.Controllers.Add(
                     typeof(DynamicController<>).MakeGenericType(candidate).GetTypeInfo()
                 );
-
-                //feature.Controllers.Add(
-                //    typeof(DynamicApiController<>).MakeGenericType(candidate).GetTypeInfo()
-                //);
             }
         }
     }
