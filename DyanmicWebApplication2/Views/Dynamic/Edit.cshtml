@@ -1,0 +1,23 @@
+﻿@model IStorageEntity
+@{
+    var controller = this.ViewContext.RouteData.Values["controller"].ToString();
+    ViewData["Title"] = controller;
+
+    var props = Model.GetType().GetProperties()
+        .Where(x => x.Name != nameof(IStorageEntity.Id));
+}
+
+<h1 class="display-4">@controller</h1>
+<form method="post" asp-controller="@controller" asp-action="Save">
+
+    @foreach (var prop in props)
+    {
+        <div class="form-group">
+            <label for="@prop.Name">@prop.Name</label>
+            <input class="form-control" name="@prop.Name" value="@prop.GetValue(Model)" />
+        </div>
+    }
+
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

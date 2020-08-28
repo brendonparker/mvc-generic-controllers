@@ -1,0 +1,36 @@
+﻿@model IEnumerable<IStorageEntity>
+@{
+    var controller = this.ViewContext.RouteData.Values["controller"].ToString();
+    ViewData["Title"] = controller;
+
+    var type = Model.GetType().GenericTypeArguments.First();
+
+    var props = type.GetProperties()
+        .Where(x => x.Name != nameof(IStorageEntity.Id));
+}
+
+<h1 class="display-4">@controller</h1>
+<a class="btn btn-primary" asp-action="Add">New</a>
+<table class="table">
+    <thead>
+        <tr>
+            @foreach (var prop in props)
+            {
+                <th>@prop.Name</th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                @foreach (var prop in props)
+                {
+                    <td>@prop.GetValue(entity)</td>
+                }
+                <td><a asp-action="Edit" asp-route-id="@entity.Id">Edit</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
